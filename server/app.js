@@ -1,13 +1,11 @@
 import express from 'express';
+import "dotenv/config.js"
+import userRouter  from './api/user.router.js';
 
+// dotenv.config();
 const app=express();
-
-app.get('/api',(req,res)=>{
-  res.json({
-    secsuss:1,
-    message:'connected'
-  })
-})
+app.use(express.json());
+app.use('/api/users',userRouter);
 
 app.listen(process.env.APP_PORT,()=>{
   console.log('server connected succsfuly')

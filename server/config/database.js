@@ -1,4 +1,4 @@
-import createPool from 'mysql';
+import { createPool } from "mysql";
 
 const pool=createPool({
   port:process.env.PORT,
