@@ -16,4 +16,15 @@ const signUp=(data,callBack)=>{
   )
 }
 
-export {signUp}
+const signIn=(id,callBack)=>{
+  pool.query(`
+        select * from users where id=?`,
+        [id], 
+        (error,results,fields)=>{
+          if(error) return callBack(error)
+          return callBack(null,results[0])
+        }
+        )
+}
+
+export {signUp, signIn}
