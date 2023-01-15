@@ -1,9 +1,9 @@
 import { genSaltSync, hashSync } from "bcrypt";
 import { signUp ,signIn ,getAllUsers} from "./user.service.js";
-import { registerValidation } from "../validation.js";
+import { registerValidation,loginValidation } from "../validation.js";
 
 
-const getAll= async(req,res)=>{
+const getAll=(req,res)=>{
   getAllUsers((error,results)=>{
     if(error) {
       console.log(error)
@@ -44,5 +44,25 @@ const createUser =async (req,res)=>{
     })
     }
 
+const login=(req,res)=>{
+  // checking validation
+  const {error}= loginValidation(req.body);
+  if(error) return res.status(400).send(error.details[0].message)
 
-export  {createUser, getAll}
+  //checking if email already exist
+  signIn(req.body.email,(error,results)=>{
+    if(error){
+      console.log(error)
+      return res.status(401).json({
+        message:'email already exist'
+      })
+    }
+    return res.status(200).json({
+      total:results.length,
+      message:results
+    })
+  })
+  
+}
+
+export  {createUser, getAll,login}

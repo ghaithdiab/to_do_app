@@ -25,10 +25,10 @@ const getAllUsers=(callBack)=>{
     return callBack(null,results)
   })
 }
-const signIn=(id,callBack)=>{
+const signIn=async(email,callBack)=>{
   pool.query(`
-        select * from users where id=?`,
-        [id], 
+        select * from users where email=?`,
+        [email], 
         (error,results,fields)=>{
           if(error) return callBack(error)
           return callBack(null,results[0])
