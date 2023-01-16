@@ -1,7 +1,6 @@
-import { genSaltSync, hashSync } from "bcrypt";
+import { genSaltSync, hashSync ,compareSync} from "bcrypt";
 import { signUp ,signIn ,getAllUsers} from "./user.service.js";
 import { registerValidation,loginValidation } from "../validation.js";
-
 
 const getAll=(req,res)=>{
   getAllUsers((error,results)=>{
@@ -18,16 +17,16 @@ const getAll=(req,res)=>{
     })
   })
 }
-const createUser =async (req,res)=>{
+const createUser =(req,res)=>{
     // checking validation
     const {error}= registerValidation(req.body);
     if(error) return res.status(400).send(error.details[0].message)
       //hash password and create new user 
-    const salt=await genSaltSync(10);
+    const salt= genSaltSync(10);
     const newUser={
       username:req.body.username,
       email:req.body.email,
-      password:hashSync(req.body.password,salt)
+      password: hashSync(req.body.password,salt)
     }
     signUp(newUser,(error,results)=>{
       if(error){
@@ -54,13 +53,17 @@ const login=(req,res)=>{
     if(error){
       console.log(error)
       return res.status(401).json({
-        message:'email already exist'
+        message:'faild to login'
       })
+    } 
+    if(results.length>0) {
+      const user=results[0];
+      const validPass= compareSync(req.body.password,user.password)
+      if (!validPass) return res.status(400).json({message:"wrong Password"})
+      return res.status(200).json({message:'loggedin' })
+    }else{
+      return res.status(400).json({message:"email not exist"})
     }
-    return res.status(200).json({
-      total:results.length,
-      message:results
-    })
   })
   
 }
