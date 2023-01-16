@@ -1,7 +1,7 @@
 import { genSaltSync, hashSync ,compareSync} from "bcrypt";
 import { signUp ,signIn ,getAllUsers} from "./user.service.js";
 import { registerValidation,loginValidation } from "../validation.js";
-
+import  Jwt  from "jsonwebtoken";
 const getAll=(req,res)=>{
   getAllUsers((error,results)=>{
     if(error) {
@@ -60,7 +60,9 @@ const login=(req,res)=>{
       const user=results[0];
       const validPass= compareSync(req.body.password,user.password)
       if (!validPass) return res.status(400).json({message:"wrong Password"})
-      return res.status(200).json({message:'loggedin' })
+      // create token 
+      const token=Jwt.sign({id:user.id},process.env.TOKEN_KEY)
+      res.header('auth-token',token).send(token)
     }else{
       return res.status(400).json({message:"email not exist"})
     }
